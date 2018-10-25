@@ -1,0 +1,3 @@
+# 2. Generate a project with Maven
+
+You must be familiar with Maven if you want to use this book as a source of knowledge.

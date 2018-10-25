@@ -1,0 +1,3 @@
+# 6. Integration with the Apache Tiles
+
+The Apache Tiles is a very powerful framework to allow composition of your webside based on small peaces.
