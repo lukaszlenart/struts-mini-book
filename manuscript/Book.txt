@@ -6,4 +6,5 @@
 6_how-to-use-spring.txt
 7_integration-with-tiles.txt
 8_login-and-authenticate.txt
-9_final-word.txt
+9_testing.txt
+10_final-word.txt
