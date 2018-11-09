@@ -104,3 +104,47 @@ To stop you application just hit `CTRL+C` in a terminal window.
 
 ## pom.xml
 
+As I said previously `pom.xml` holds important information about your project. The most important are dependencies of your project which means what library are used in your project. You can easily control version of all the libraries in one place. Thus also allows upgraded them when needed. You can check for a new version of a library using [https://search.maven.org/](https://search.maven.org/).
+
+See the below exercise:
+
+```
+<properties>
+    <struts2.version>2.5.14.1</struts2.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+<dependencies>
+
+    <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-core</artifactId>
+        <version>${struts2.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-config-browser-plugin</artifactId>
+        <version>${struts2.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-junit-plugin</artifactId>
+        <version>${struts2.version}</version>
+        <scope>test</scope>
+    </dependency>
+    ...
+```
+
+The first section defines `properties` that can be used in your pom to keep the same information in one place. In this case you have information of currently used version of Struts extracted into a `<struts2.version>` property. By changing it, you will upgrade all the related Struts dependencies in one step. So let's do it, version `2.5.14.1` is a bit outdated so we must upgraded it to the latest available now which is `2.5.18`. Just replace `2.5.14.1` with `2.5.18` and you are done.
+
+The following section defines project's dependencies. It's a list of `groupId/artifactId/version` - the same as you have been defining when creating your first project using the Struts Maven Archetypes. Those properties uniquely identify each dependency.
+
+As you can notice there is one difference, the last dependency `struts2-junit-plugin` has `<scope>` property defined as `test`. It means that this dependency will be used only in tests (e.g. unit tests) and what's more important it won't be available in a production version of your application. Yes, this means there be no `struts2-junit-plugin.jar` in the final `WEB-INF/lib` folder. I will explain more about using test dependencies in chapter [9. Testing](#9_testing).
+
+## Summary
+
+In this chapter I wanted present some basic information about how to use Maven to manage your Java project. These days Maven is a basic tool for Java projects to manage dependencies and the whole life cycle of a Java project. You should be familiar with this tool as almost all the Apache Java projects are using it, also many other open source Java projects are using Maven.
+
+Maven is very handy tool when used with Struts, we - Struts committers - are using it as well on daily basis when we are working on a new version of Struts. We consider this tool as must-have in terms of using Struts in your projects.
