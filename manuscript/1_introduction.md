@@ -2,7 +2,7 @@
 
 ## About this book
 
-This book is mostly addressed to people who are just starting using The Apache Struts in their project. Reading this book will allow you to grasp basic concepts laying behind the framework. At end of the book you will be able to use those concepts easily and with full understanding.
+This book is mostly addressed to people who are just starting using The Apache Struts in their project. Reading this book will allow you to grasp basic concepts laying behind the framework. At end of the book you will be able to use those concepts easily and with full understanding. I assume you have at least basic knowledge about Struts, you understand what Action mean, or Interceptor or Result. All these basic information can be obtained reading documentations or by reading [Starting Struts 2](https://www.infoq.com/minibooks/starting-struts2) - a free book from InfoQ.
 
 ## What is Struts
 
