@@ -78,3 +78,20 @@ The two most important attributes are:
 ```
 
 The `jakarta-stream` is a name of another implementation of a type `org.apache.struts2.dispatcher.multipart.MultiPartRequest` that is provided by Struts. You can find more in [Alternative Libraries](https://struts.apache.org/core-developers/file-upload.html#alternate-libraries) section in docs.
+
+### package
+
+Now we are moving into `package` which is a group of actions and interceptors that are tied to a given namespace. Each package is identified by `name` and `namespace` attributes. The `name` must be unique across your application. Namespace is just a logical name of your functionality, it isn't a URL or part of it. Having the following namespaces:
+
+  - `/main`
+  - `/main/admin`
+  - `/main/user`
+
+it doesn't mean that you have some hierarchy here, that `admin` and `user` namespaces are _beneath_ the `main` namespace. These are just logically separated blocks.
+
+The other important attributes are:
+
+  - `extends` - your package can extend an existing package to inherit all the defined actions, interceptors and so on. It is a good practice to define your own parent package (or even few packages) that you can use when defining the blocks. Using the one provided by the framework i.e. `struts-default` is a good idea only for small projects or when playing with Struts.
+  - `abstract` - when set `true` it means that this package can be only used as a parent package of others, the same as with an abstract class in Java.
+  - `strict-method-invocation` - this feature is set to `true` by default and it means that only defined action's methods will be exposed as actions. You can find more about that in my next book or in the [Security Guide](https://struts.apache.org/security/#strict-method-invocation)
+
