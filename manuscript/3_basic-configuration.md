@@ -95,3 +95,64 @@ The other important attributes are:
   - `abstract` - when set `true` it means that this package can be only used as a parent package of others, the same as with an abstract class in Java.
   - `strict-method-invocation` - this feature is set to `true` by default and it means that only defined action's methods will be exposed as actions. You can find more about that in my next book or in the [Security Guide](https://struts.apache.org/security/#strict-method-invocation)
 
+### result-types and result-type
+
+Results are defined types of responses your application can perform as a final outcome of your action. Struts provides few pre-defined results:
+
+  - `dispatcher` - a forward to a view, in most cases a JSP file
+  - `tiles` - process a result as a Tiles definition
+  - `httpheader` - returns response as HTTP headers
+  - `stream` - response is a stream that can be downloaded by a browser
+
+and many more. Also plugins can provide new types of results. You can find more information in [Result Types](https://struts.apache.org/core-developers/result-types.html) section of the documentation.
+
+As I mentioned early, your application should define a parent package that will be reused across the application. In this package you should define the results that will be available to your actions. It's a rare case that an application will use all the available results, in most cases applications are using just few results. And those results should be strictly defined in the parent package.
+
+Below is an example pre-defined set of results for your application:
+
+```
+<result-types>
+  <result-type name="dispatcher" class="org.apache.struts2.result.ServletDispatcherResult" default="true"/>
+  <result-type name="httpheader" class="org.apache.struts2.result.HttpHeaderResult"/>
+</result-type>  
+```
+
+As you see a result definition consist of a `name` attribute which can be an arbitrary string, it doesn't have to be the same as in the Struts. You can use a name that fits your requirements best. The second required attribute is `class` which must point to an existing Java class that implements `Result` interface.
+
+The last attribute is `default` which tells framework which result to use when there was no result type definition in the action definition. I will explain this below in a section about action definition.
+
+### interceptors and interceptor
+
+Interceptors are core concept of Struts to control flow of a request. They are used to control how incoming request should be steered to given action and the final result. Below is a flow how interceptors can affect action flow:
+
+![](images/interceptors.png)
+
+As you see interceptors are executed before an action and after it so they can change the flow. This is a very useful functionality that can be used e.g. to intercept unauthorized request and redirect them to a login page. Or you can use an interceptor to record all the request parameters into a log. You can find more in [Interceptors](https://struts.apache.org/core-developers/interceptors.html) section of the documentation.
+
+The same as for results, in most cases your application doesn't require to use all the available interceptors. Thus can affect performance of your application if there is too many interceptors that must process the request. Also interceptors can have cross-dependencies between each other. That's why you should just define a dedicated set of interceptors that will be used in your application. This will also allow defining your custom interceptors in the future.
+
+Below is an example of custom set of interceptors:
+
+```
+<interceptors>
+  <interceptor name="exception" class="com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor"/>
+  <interceptor name="servletConfig" class="org.apache.struts2.interceptor.ServletConfigInterceptor"/>
+  <interceptor name="i18n" class="org.apache.struts2.interceptor.I18nInterceptor"/>
+  <interceptor name="params" class="com.opensymphony.xwork2.interceptor.ParametersInterceptor"/>
+  <interceptor name="prepare" class="com.opensymphony.xwork2.interceptor.PrepareInterceptor"/>
+  <interceptor name="conversionError" class="org.apache.struts2.interceptor.StrutsConversionErrorInterceptor"/>
+  <interceptor name="validation" class="org.apache.struts2.interceptor.validation.AnnotationValidationInterceptor"/>
+  <interceptor name="workflow" class="com.opensymphony.xwork2.interceptor.DefaultWorkflowInterceptor"/>
+  <interceptor name="fileUpload" class="org.apache.struts2.interceptor.FileUploadInterceptor"/>
+
+  <interceptor name="login" class="com.gruuf.web.interceptors.LoginInterceptor"/>
+  <interceptor name="user" class="com.gruuf.web.interceptors.UserInterceptor"/>
+  <interceptor name="auth" class="com.gruuf.web.interceptors.AuthInterceptor"/>
+  <interceptor name="secure" class="com.gruuf.web.interceptors.SecureInterceptor"/>
+
+...
+```
+
+This excerpt comes from my own application and as you see I'm just using few interceptors provided by the framework, below are my custom interceptors. Similar to the result definition, an interceptor definition consist of a `name` attribute and a `class` attribute. You can an arbitrary name and class must point to a Java class which implements `Interceptor` interface.
+
+### interceptor-stack and interceptor-ref
