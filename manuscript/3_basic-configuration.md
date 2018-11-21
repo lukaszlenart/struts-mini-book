@@ -156,3 +156,79 @@ Below is an example of custom set of interceptors:
 This excerpt comes from my own application and as you see I'm just using few interceptors provided by the framework, below are my custom interceptors. Similar to the result definition, an interceptor definition consist of a `name` attribute and a `class` attribute. You can an arbitrary name and class must point to a Java class which implements `Interceptor` interface.
 
 ### interceptor-stack and interceptor-ref
+
+All the interceptors are collected into stacks and in your Struts application you will be using those stacks to adjust behavior of one given part of the application to expected needs. Yes, you are right, you should have few custom stacks that fits your requirements. You shouldn't just use this existing stacks provided by the framework. Use them as an example to define your own stacks. It's the same case as with results,  it rarely happens that one interceptors stack will fit into all the circumstances.
+
+Below is an example stack build using the above defined interceptors:
+
+```
+<interceptor-stack name="gruufDefault">
+  <interceptor-ref name="exception">
+    <param name="logEnabled">true</param>
+    <param name="logCategory">com.gruuf</param>
+    <param name="logLevel">error</param>
+  </interceptor-ref>
+  <interceptor-ref name="secure"/>
+  <interceptor-ref name="about"/>
+  <interceptor-ref name="login"/>
+  <interceptor-ref name="auth"/>
+  <interceptor-ref name="servletConfig"/>
+  <interceptor-ref name="user"/>
+  <interceptor-ref name="restriction"/>
+  <interceptor-ref name="policy"/>
+  <interceptor-ref name="i18n"/>
+  <interceptor-ref name="params"/>
+  <interceptor-ref name="prepare"/>
+  <interceptor-ref name="params"/>
+  <interceptor-ref name="conversionError"/>
+  <interceptor-ref name="validation">
+    <param name="excludeMethods">input,back,cancel,browse</param>
+  </interceptor-ref>
+  <interceptor-ref name="workflow">
+    <param name="excludeMethods">input,back,cancel,browse</param>
+  </interceptor-ref>
+</interceptor-stack>
+```      
+
+As you can see, to define a stack you must use `<interceptor-stack/>` tag and define a `name` which must be unique across the application. You build your stack using `<interceptor-ref/>` tag with a `name` attribute pointing to previously defined interceptor. You can create stacks from existing stack to slightly modify its behavior by adding another interceptor, see the the example below:
+
+```
+<interceptor-stack name="defaultWithMessages">
+  <interceptor-ref name="gruufDefault"/>
+  <interceptor-ref name="store">
+    <param name="operationMode">AUTOMATIC</param>
+  </interceptor-ref>
+</interceptor-stack>
+```
+
+I have used the previously defined stack `gruufDefault` and created a new stack by adding one more interceptor to the end. It's a good practice to create your own stacks. Please remember that sometimes there inner dependencies between interceptors, which that one interceptor must be put next after another to work properly.
+
+### default-*
+
+There are few defaults that you should define to allow your application work smoothly.
+
+The first is `<default-interceptor-ref/>` tag, which defines which interceptor stack to use if no one was defined for an action. This is a pare package setting so you can have different defaults for different packages.
+
+```
+<default-interceptor-ref name="gruufDefault"/>
+```
+
+You must just reference an existing stack that was defined in this package or in any other parent package. This means if you have an action `hello` without interceptors definition, the default interceptor reference will be used. I will show an example later when I will be presenting an action's configuration.
+
+Another default-* is `<default-action-ref/>` which tells framework which action execute if none match the request in the package. You can think of this default action as an `index.html` file which is by default served by a web server. The default action reference has the same purpose, framework will execute the default action if request matched package's namespace but no action.
+
+```
+<default-action-ref name="index"/>
+```
+
+With a `name` attribute you must reference an existing action definition in this package or in the parent packages.
+
+The last default-* is `<default-class-ref/>` which defines a Java class that will be used to instantiate actions without a `class` attribute. I will explain this more when I will be showing you how to define an action.
+
+```
+<default-class-ref class="com.gruuf.web.actions.BaseAction"/>
+```
+
+The `class` attribute must point to an existing Java class and class must be an instantiable Java class (not an interface not an abstract class).
+
+### <global-results>
