@@ -43,13 +43,13 @@ Since Apache Struts 2.5.6 you can use an env substitution mechanism which allows
 </struts>
 ```
 
-As you see you can also specify a default value in case if the variable is missing, in this case `devMode` will be set to `false` when there is no `DEV_MODE` environment variable defined.
+As you see you can also specify a default value in case if the variable is missing. In this case `devMode` will be set to `false` when there is no `DEV_MODE` environment variable defined.
 
 You can also define your own constants and inject them into your actions but this an advance topic that I will explore in my next book.
 
 ### bean
 
-Struts allows defines beans, functional components, building blocks that are used to constitute the whole framework. Thus are also an extension points for the users. Each defined bean can be replaced with different implementation. That how plugins work, they provide a new version of given bean to change framework's behavior.
+Struts allows to define beans, functional components, building blocks that are used to constitute the whole framework. Thus are also an extension points for the users. Each defined bean can be replaced with different implementation. That how plugins work, they provide a new version of given bean to change framework's behavior.
 
 Here is an example bean definition from `struts-default.xml`:
 
@@ -81,18 +81,18 @@ The `jakarta-stream` is a name of another implementation of a type `org.apache.s
 
 ### package
 
-Now we are moving into `package` which is a group of actions and interceptors that are tied to a given namespace. Each package is identified by `name` and `namespace` attributes. The `name` must be unique across your application. Namespace is just a logical name of your functionality, it isn't a URL or part of it. Having the following namespaces:
+Now we are moving into `package` which is a group of actions and interceptors that are tied to a given namespace. Each package is identified by `name` and `namespace` attributes. The `name` must be unique across your application. Namespace is just a logical name of your functionality, it isn't a URL or a part of it. Having the following namespaces:
 
   - `/main`
   - `/main/admin`
   - `/main/user`
 
-it doesn't mean that you have some hierarchy here, that `admin` and `user` namespaces are _beneath_ the `main` namespace. These are just logically separated blocks.
+it doesn't mean that you have some hierarchy here, that the `admin` and `user` namespaces are _beneath_ the `main` namespace. These are just logically separated blocks.
 
 The other important attributes are:
 
   - `extends` - your package can extend an existing package to inherit all the defined actions, interceptors and so on. It is a good practice to define your own parent package (or even few packages) that you can use when defining the blocks. Using the one provided by the framework i.e. `struts-default` is a good idea only for small projects or when playing with Struts.
-  - `abstract` - when set `true` it means that this package can be only used as a parent package of others, the same as with an abstract class in Java.
+  - `abstract` - when set `true` it means that this package can only be used as a parent package of others, the same as with an abstract class in Java.
   - `strict-method-invocation` - this feature is set to `true` by default and it means that only defined action's methods will be exposed as actions. You can find more about that in my next book or in the [Security Guide](https://struts.apache.org/security/#strict-method-invocation)
 
 ### result-types and result-type
@@ -106,58 +106,76 @@ Results are defined types of responses your application can perform as a final o
 
 and many more. Also plugins can provide new types of results. You can find more information in [Result Types](https://struts.apache.org/core-developers/result-types.html) section of the documentation.
 
-As I mentioned early, your application should define a parent package that will be reused across the application. In this package you should define the results that will be available to your actions. It's a rare case that an application will use all the available results, in most cases applications are using just few results. And those results should be strictly defined in the parent package.
+As I mentioned early, your application should define a parent package that will be reused across the application. In this package you should define the results that will be available to your actions. It's a rare case that an application will use all the available results, in most cases applications are using just few of them. And those results should be strictly defined in the parent package.
 
-Below is an example pre-defined set of results for your application:
+Below is an example of pre-defined set of results for your application:
 
 ```
 <result-types>
-  <result-type name="dispatcher" class="org.apache.struts2.result.ServletDispatcherResult" default="true"/>
-  <result-type name="httpheader" class="org.apache.struts2.result.HttpHeaderResult"/>
+  <result-type 
+    name="dispatcher" 
+    class="org.apache.struts2.result.ServletDispatcherResult" 
+    default="true"/>
+  
+  <result-type 
+    name="httpheader" 
+    class="org.apache.struts2.result.HttpHeaderResult"/>
 </result-type>  
 ```
 
 As you see a result definition consist of a `name` attribute which can be an arbitrary string, it doesn't have to be the same as in the Struts. You can use a name that fits your requirements best. The second required attribute is `class` which must point to an existing Java class that implements `Result` interface.
 
-The last attribute is `default` which tells framework which result to use when there was no result type definition in the action definition. I will explain this below in a section about action definition.
+The last attribute is `default` which tells framework which result to use when there was no result type definition in the action definition. I will explain this below in a section about actions.
 
 ### interceptors and interceptor
 
-Interceptors are core concept of Struts to control flow of a request. They are used to control how incoming request should be steered to given action and the final result. Below is a flow how interceptors can affect action flow:
+Interceptors are core concept of Struts to control flow of a request. They are used to control how incoming request should be steered to a given action and then to the final result. Below you can see how interceptors can affect action flow:
 
 ![](images/interceptors.png)
 
-As you see interceptors are executed before an action and after it so they can change the flow. This is a very useful functionality that can be used e.g. to intercept unauthorized request and redirect them to a login page. Or you can use an interceptor to record all the request parameters into a log. You can find more in [Interceptors](https://struts.apache.org/core-developers/interceptors.html) section of the documentation.
+As you see interceptors are executed before an action and after it, so they can change the flow. This is a very useful functionality that can be used e.g. to intercept unauthorized request and redirect them to a login page. Or you can use an interceptor to record all the request parameters into a log. You can find more in [Interceptors](https://struts.apache.org/core-developers/interceptors.html) section of the documentation.
 
-The same as for results, in most cases your application doesn't require to use all the available interceptors. Thus can affect performance of your application if there is too many interceptors that must process the request. Also interceptors can have cross-dependencies between each other. That's why you should just define a dedicated set of interceptors that will be used in your application. This will also allow defining your custom interceptors in the future.
+The same as for results, in most cases your application doesn't require to use all af the available interceptors. Thus can affect performance of your application if there is too many interceptors that must process the request. Also interceptors can have cross-dependencies between each other. That's why you should just define a dedicated set of interceptors that will be used in your application. This will also allow defining your custom interceptors in the future.
 
 Below is an example of custom set of interceptors:
 
 ```
 <interceptors>
-  <interceptor name="exception" class="com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor"/>
-  <interceptor name="servletConfig" class="org.apache.struts2.interceptor.ServletConfigInterceptor"/>
-  <interceptor name="i18n" class="org.apache.struts2.interceptor.I18nInterceptor"/>
-  <interceptor name="params" class="com.opensymphony.xwork2.interceptor.ParametersInterceptor"/>
-  <interceptor name="prepare" class="com.opensymphony.xwork2.interceptor.PrepareInterceptor"/>
-  <interceptor name="conversionError" class="org.apache.struts2.interceptor.StrutsConversionErrorInterceptor"/>
-  <interceptor name="validation" class="org.apache.struts2.interceptor.validation.AnnotationValidationInterceptor"/>
-  <interceptor name="workflow" class="com.opensymphony.xwork2.interceptor.DefaultWorkflowInterceptor"/>
-  <interceptor name="fileUpload" class="org.apache.struts2.interceptor.FileUploadInterceptor"/>
+  <interceptor name="exception" 
+    class="com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor"/>
+  <interceptor name="servletConfig" 
+    class="org.apache.struts2.interceptor.ServletConfigInterceptor"/>
+  <interceptor name="i18n" 
+    class="org.apache.struts2.interceptor.I18nInterceptor"/>
+  <interceptor name="params" 
+    class="com.opensymphony.xwork2.interceptor.ParametersInterceptor"/>
+  <interceptor name="prepare" 
+    class="com.opensymphony.xwork2.interceptor.PrepareInterceptor"/>
+  <interceptor name="conversionError" 
+    class="org.apache.struts2.interceptor.StrutsConversionErrorInterceptor"/>
+  <interceptor name="validation" 
+    class="org.apache.struts2.interceptor.validation.AnnotationValidationInterceptor"/>
+  <interceptor name="workflow" 
+    class="com.opensymphony.xwork2.interceptor.DefaultWorkflowInterceptor"/>
+  <interceptor name="fileUpload" 
+    class="org.apache.struts2.interceptor.FileUploadInterceptor"/>
 
-  <interceptor name="login" class="com.gruuf.web.interceptors.LoginInterceptor"/>
-  <interceptor name="user" class="com.gruuf.web.interceptors.UserInterceptor"/>
-  <interceptor name="auth" class="com.gruuf.web.interceptors.AuthInterceptor"/>
-  <interceptor name="secure" class="com.gruuf.web.interceptors.SecureInterceptor"/>
-
-...
+  <interceptor name="login" 
+    class="com.gruuf.web.interceptors.LoginInterceptor"/>
+  <interceptor name="user" 
+    class="com.gruuf.web.interceptors.UserInterceptor"/>
+  <interceptor name="auth" 
+    class="com.gruuf.web.interceptors.AuthInterceptor"/>
+  <interceptor name="secure" 
+    class="com.gruuf.web.interceptors.SecureInterceptor"/>
+  ...
 ```
 
-This excerpt comes from my own application and as you see I'm just using few interceptors provided by the framework, below are my custom interceptors. Similar to the result definition, an interceptor definition consist of a `name` attribute and a `class` attribute. You can an arbitrary name and class must point to a Java class which implements `Interceptor` interface.
+This excerpt comes from my own application and as you see I'm just using few interceptors provided by the framework, beneath are my custom interceptors. Similar to the result definition, an interceptor definition consist of a `name` attribute and a `class` attribute. You can use an arbitrary name and the class must point to a Java class which implements `Interceptor` interface.
 
 ### interceptor-stack and interceptor-ref
 
-All the interceptors are collected into stacks and in your Struts application you will be using those stacks to adjust behavior of one given part of the application to expected needs. Yes, you are right, you should have few custom stacks that fits your requirements. You shouldn't just use this existing stacks provided by the framework. Use them as an example to define your own stacks. It's the same case as with results,  it rarely happens that one interceptors stack will fit into all the circumstances.
+All the interceptors are collected into stacks and in your Struts application you will be using those stacks to adjust behavior of one given part of the application to expected needs. Yes, you are right, you should have few custom stacks that fits your requirements. You shouldn't just use the existing stacks provided by the framework. Use them as an example to define your own stacks. It's the same case as with results, it rarely happens that one interceptors stack will fit into all the circumstances.
 
 Below is an example stack build using the above defined interceptors:
 
@@ -190,7 +208,7 @@ Below is an example stack build using the above defined interceptors:
 </interceptor-stack>
 ```      
 
-As you can see, to define a stack you must use `<interceptor-stack/>` tag and define a `name` which must be unique across the application. You build your stack using `<interceptor-ref/>` tag with a `name` attribute pointing to previously defined interceptor. You can create stacks from existing stack to slightly modify its behavior by adding another interceptor, see the the example below:
+As you can see, to define a stack you must use `<interceptor-stack/>` tag and define a `name` which must be unique across the application. You build your stack using `<interceptor-ref/>` tag with a `name` attribute pointing to previously defined interceptor. You can create stacks from existing stack to slightly modify its behavior by adding another interceptor, see the example below:
 
 ```
 <interceptor-stack name="defaultWithMessages">
@@ -201,13 +219,13 @@ As you can see, to define a stack you must use `<interceptor-stack/>` tag and de
 </interceptor-stack>
 ```
 
-I have used the previously defined stack `gruufDefault` and created a new stack by adding one more interceptor to the end. It's a good practice to create your own stacks. Please remember that sometimes there inner dependencies between interceptors, which that one interceptor must be put next after another to work properly.
+I have used the previously defined stack `gruufDefault` and created a new stack by adding one more interceptor to the end. It's a good practice to create your own stacks. Please remember that sometimes there inner dependencies between interceptors, which means that one interceptor must be put next after another to work properly.
 
 ### default-*
 
 There are few defaults that you should define to allow your application work smoothly.
 
-The first is `<default-interceptor-ref/>` tag, which defines which interceptor stack to use if no one was defined for an action. This is a pare package setting so you can have different defaults for different packages.
+The first is `<default-interceptor-ref/>` tag, which defines which interceptor stack to use if no one was defined for an action. This is a per package configuration so you can have different defaults for different packages.
 
 ```
 <default-interceptor-ref name="gruufDefault"/>
@@ -215,7 +233,7 @@ The first is `<default-interceptor-ref/>` tag, which defines which interceptor s
 
 You must just reference an existing stack that was defined in this package or in any other parent package. This means if you have an action `hello` without interceptors definition, the default interceptor reference will be used. I will show an example later when I will be presenting an action's configuration.
 
-Another default-* is `<default-action-ref/>` which tells framework which action execute if none match the request in the package. You can think of this default action as an `index.html` file which is by default served by a web server. The default action reference has the same purpose, framework will execute the default action if request matched package's namespace but no action.
+Another default-* is `<default-action-ref/>` which tells framework which action to execute if none match the request in the package. You can think of this default action as an `index.html` file which is by default served by a web server. The default action reference has the same purpose, framework will execute the default action if request matched package's namespace but no action.
 
 ```
 <default-action-ref name="index"/>
@@ -229,6 +247,6 @@ The last default-* is `<default-class-ref/>` which defines a Java class that wil
 <default-class-ref class="com.gruuf.web.actions.BaseAction"/>
 ```
 
-The `class` attribute must point to an existing Java class and class must be an instantiable Java class (not an interface not an abstract class).
+The `class` attribute must point to an existing Java class and class must be an instantiable Java class (neither an interface nor an abstract class).
 
-### <global-results>
+### global-results
