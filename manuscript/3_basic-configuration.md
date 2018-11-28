@@ -250,3 +250,63 @@ The last default-* is `<default-class-ref/>` which defines a Java class that wil
 The `class` attribute must point to an existing Java class and class must be an instantiable Java class (neither an interface nor an abstract class).
 
 ### global-results
+
+Defining a `<global-results/>` is the same as defining a normal `<result/>` only scope is wider. In this case it's a package scope, which means you can use the defined global results with actions defined in this package or in any other package that inherits of this package.
+
+```
+<global-results>
+  <result name="https-redirect" type="redirect">
+    <param name="location">https://gruuf.com/</param>
+  </result>
+  <result name="login" type="redirectAction">
+    <param name="actionName">login</param>
+    <param name="namespace">/</param>
+  </result>
+  <result name="error">error</result>
+  ...
+```
+
+The `<global-results/>` is a list of defined `<result/>`s, that's all. I will explain how to define a `<result/>` wider in a section below.
+
+### global-allowed-methods
+
+This is a new functionality introduced with Struts 2.5, it allows define methods that can be accessible with a bang, e.g. `Category!create.action`. Using `!` is a technic called [Dynamic Method Invocation](https://struts.apache.org/core-developers/action-configuration.html#dynamic-method-invocation) and limiting access to which method can be used with the `!` is called [Strict Method Invocation](https://struts.apache.org/core-developers/action-configuration.html#strict-method-invocation). This is an advanced security topic and you shouldn't change this if you are not 100% sure of what you doing. Defining a wrong `<global-allowed-methods/>` with DMI enabled can lead to a security vulnerability of your application.
+
+Here is a list of methods defined in `struts-default.xml`
+
+```
+<global-allowed-methods>
+  execute,
+  input,
+  back,
+  cancel,
+  browse,
+  save,
+  delete,
+  list,
+  index
+</global-allowed-methods>
+```
+
+In most cases you don't have to define those methods, the default is enough.
+
+### global-exception-mappings and exception-mapping
+
+Defining a `<global-exception-mappings/>` is a good practice to properly handle exceptional situations in your application. This allows show a proper response in case your application has crashed. As name suggest those are global handlers that will be used if there were no `<exception-mapping/>` defined for an action.
+
+```
+<global-exception-mappings>
+  <exception-mapping 
+    exception="java.lang.Exception" result="error" />
+</global-exception-mappings>
+```
+To define a handler for a given type of exception you must provide a full name of the Java exception class in the `exception` attribute. In the example above a general `java.lang.Exception` class is used which means this will catch any exception excepts errors. The `result` attributes points to a global result defined within this package or in any parent package.
+
+Basically, when an exception occurs the framework will stop processing current request and will steer flow to the defined result. The exception will be available on the stack and can be used to show more details about it:
+
+```
+<h4>Exception Name: <s:property value="exception" /> </h4>
+<h4>Exception Details: <s:property value="exceptionStack" /></h4>
+```
+
+### action
