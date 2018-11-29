@@ -310,3 +310,31 @@ Basically, when an exception occurs the framework will stop processing current r
 ```
 
 ### action
+
+Finally we are moving to a core Struts functionality. Actions are the central points of your application when developing a Struts based application. It's a layer where your web logic happens. You shouldn't mix your web logic with your business logic, the former should be delegated to beans, services or DAOs - depending on how your application is structured.
+
+Yet, you can put all your logic in actions only if you are testing a solution or just playing with Struts. You should always have clear boundaries between layers performing different logic.
+
+Let's define a simple action.
+
+```xml
+<action name="index"/>
+```
+
+To define an action you must use a `<action/>` tag with at least one attribute `name` - the `name` must be unique in the given namespace. You don't have to define `<result>`s if your action will use one of the global results defined previously.
+
+Let's analyze this super simple action config. What class will be used to instantiate the action? Do you remember `<default-class-ref/>` for the previous sections? If so, exactly that class will be used to create instance of the `index` action. By default Struts defines `<default-class-ref>` as:
+
+```xml
+<default-class-ref class="com.opensymphony.xwork2.ActionSupport" />
+```
+
+If didn't define your own default, this class will be used but only if your package extends `struts-default` package.
+
+Another questions, what stack of interceptors will be applied to this action? Do you remember `<default-interceptor-ref/>`? Right, exactly this stack of interceptors will be applied to the action. And again, if you are extending `struts-default` package, `defaultStack` is defined as the default interceptors stack.
+
+Another question, what method will be called inside the `ActionSupport` class? This isn't something that you can define but Struts has built-in default to execute an `execute` method when none was provided. This is also the first method of the `<global-allowed-methods>` defined in `struts-default.xml` as showed above.
+
+As you see, Struts will do a lot more than you expect based on such a simple configuration. That's why knowledge about different aspects of Struts configuration is so important to properly understand how to configure actions.
+
+Let's configure one more Struts action, this time a bit more complicated
