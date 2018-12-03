@@ -12,7 +12,7 @@ You can also use annotations or base the whole application on a convention, thos
 
 Please open the `struts.xml` file in an editor or IDE of your choice. This file is entry point to configuration of your application, you can have more than one configuration file but all other files must be included in `struts.xml` to be loaded and parsed. You can to this by using `<include/>` tag as presented below:
 
-```
+```xml
 <struts>
 
   <include file="struts-constants.xml"/>
@@ -29,7 +29,7 @@ You can use this directive to split configuration into smaller, logical blocks. 
 
 Another very important directive is `<constant/>` that is used to change behavior of the framework. The most known and important constant is `struts.devMode` which switches Struts into a development mode. In this mode, your application is more verbose, it will produce more logs also configuration will be automatically reloaded when changed, them same with properties files used to localize your application.
 
-```
+```xml
 <struts>
   <constant name="struts.devMode" value="true">
 </struts>
@@ -37,7 +37,7 @@ Another very important directive is `<constant/>` that is used to change behavio
 
 Since Apache Struts 2.5.6 you can use an env substitution mechanism which allows use environment variables or system properties in your constant definitions, e.g.:
 
-```
+```xml
 <struts>
   <constant name="struts.devMode" value="${env.DEV_MODE:false}">
 </struts>
@@ -53,9 +53,13 @@ Struts allows to define beans, functional components, building blocks that are u
 
 Here is an example bean definition from `struts-default.xml`:
 
-```
+```xml
 <struts>
-  <bean type="org.apache.struts2.dispatcher.multipart.MultiPartRequest" name="jakarta" class="org.apache.struts2.dispatcher.multipart.JakartaMultiPartRequest" scope="prototype"/>
+  <bean 
+    type="org.apache.struts2.dispatcher.multipart.MultiPartRequest" 
+    class="org.apache.struts2.dispatcher.multipart.JakartaMultiPartRequest"
+    name="jakarta"
+    scope="prototype"/>
 </struts>  
 ```
 
@@ -71,7 +75,7 @@ The two most important attributes are:
 
   In most cases you will be selecting which bean to use be defining a constant. In this case to select other implementation of the `MultiPartRequest` you can define the constant as below:
 
-```
+```xml
 <struts>
   <constant name="struts.multipart.parser" value="jakarta-stream"/>
 </struts>
@@ -110,7 +114,7 @@ As I mentioned early, your application should define a parent package that will 
 
 Below is an example of pre-defined set of results for your application:
 
-```
+```xml
 <result-types>
   <result-type 
     name="dispatcher" 
@@ -139,7 +143,7 @@ The same as for results, in most cases your application doesn't require to use a
 
 Below is an example of custom set of interceptors:
 
-```
+```xml
 <interceptors>
   <interceptor name="exception" 
     class="com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor"/>
@@ -179,7 +183,7 @@ All the interceptors are collected into stacks and in your Struts application yo
 
 Below is an example stack build using the above defined interceptors:
 
-```
+```xml
 <interceptor-stack name="gruufDefault">
   <interceptor-ref name="exception">
     <param name="logEnabled">true</param>
@@ -227,7 +231,7 @@ There are few defaults that you should define to allow your application work smo
 
 The first is `<default-interceptor-ref/>` tag, which defines which interceptor stack to use if no one was defined for an action. This is a per package configuration so you can have different defaults for different packages.
 
-```
+```xml
 <default-interceptor-ref name="gruufDefault"/>
 ```
 
@@ -235,7 +239,7 @@ You must just reference an existing stack that was defined in this package or in
 
 Another default-* is `<default-action-ref/>` which tells framework which action to execute if none match the request in the package. You can think of this default action as an `index.html` file which is by default served by a web server. The default action reference has the same purpose, framework will execute the default action if request matched package's namespace but no action.
 
-```
+```xml
 <default-action-ref name="index"/>
 ```
 
@@ -243,7 +247,7 @@ With a `name` attribute you must reference an existing action definition in this
 
 The last default-* is `<default-class-ref/>` which defines a Java class that will be used to instantiate actions without a `class` attribute. I will explain this more when I will be showing you how to define an action.
 
-```
+```xml
 <default-class-ref class="com.gruuf.web.actions.BaseAction"/>
 ```
 
@@ -253,7 +257,7 @@ The `class` attribute must point to an existing Java class and class must be an 
 
 Defining a `<global-results/>` is the same as defining a normal `<result/>` only scope is wider. In this case it's a package scope, which means you can use the defined global results with actions defined in this package or in any other package that inherits of this package.
 
-```
+```xml
 <global-results>
   <result name="https-redirect" type="redirect">
     <param name="location">https://gruuf.com/</param>
@@ -274,7 +278,7 @@ This is a new functionality introduced with Struts 2.5, it allows define methods
 
 Here is a list of methods defined in `struts-default.xml`
 
-```
+```xml
 <global-allowed-methods>
   execute,
   input,
@@ -294,7 +298,7 @@ In most cases you don't have to define those methods, the default is enough.
 
 Defining a `<global-exception-mappings/>` is a good practice to properly handle exceptional situations in your application. This allows show a proper response in case your application has crashed. As name suggest those are global handlers that will be used if there were no `<exception-mapping/>` defined for an action.
 
-```
+```xml
 <global-exception-mappings>
   <exception-mapping 
     exception="java.lang.Exception" result="error" />
@@ -304,7 +308,7 @@ To define a handler for a given type of exception you must provide a full name o
 
 Basically, when an exception occurs the framework will stop processing current request and will steer flow to the defined result. The exception will be available on the stack and can be used to show more details about it:
 
-```
+```xml
 <h4>Exception Name: <s:property value="exception" /> </h4>
 <h4>Exception Details: <s:property value="exceptionStack" /></h4>
 ```
@@ -337,4 +341,36 @@ Another question, what method will be called inside the `ActionSupport` class? T
 
 As you see, Struts will do a lot more than you expect based on such a simple configuration. That's why knowledge about different aspects of Struts configuration is so important to properly understand how to configure actions.
 
-Let's configure one more Struts action, this time a bit more complicated
+Let's configure one more Struts action, this time a bit more complicated:
+
+```xml
+<action name="edit" class="org.apache.struts2.showcase.action.SkillAction" method="edit">
+    <result name="input">/WEB-INF/empmanager/editSkill.jsp</result>
+    <result type="redirect">list.action</result>
+    <interceptor-ref name="params" />
+    <interceptor-ref name="basicStack"/>
+</action>
+```
+
+Here we have an action named `edit` which is an instance of the class `SkillAction` and a method `edit` will be called to execute the action. So `SkillAction` must have the method `edit` that will return a `String` value that will be mapped onto defined action results and if not found, onto the global results.
+
+Please note that you do not have to define `edit` as an allowed action method (see `global-allowed-methods` section above). Defining a `method` attribute makes the method an allowed method automatically, that how SMI works.
+
+The action defines two action results - `input` and a default one (no name). The default one is `success` because Struts assumes `success` as a default result name. So your action can either return `success` or `input`. The `input` result doesn't specify `type` which means a default type will be used which is `dispatcher` - the default is defined by setting a `default` attribute to `true` when defining a result (see section above about `result-types`).
+
+Next, there are two references to interceptors defined, where the first is an interceptor named `params` and the second is an interceptors stack called `basicStack` (which is defined in `struts-default.xml`)
+
+Basically what we have did here is to define some non-default values that will be used instead of the framework predefined defaults. Any other action configurations do the same - replaces default with action's specific values.
+
+### unknown-handler-stack & unknown-handler-ref
+
+The final configuration options are `<unknown-handler-stack/>` and `<unknown-handler-ref/>` which can be used to handle an unknown action. An action is unknown if it didn't match any defined action in a given package. The handlers will be called just before steering flow into `<default-action-ref/>`. These handlers can be also used to handle an unknown result and action method.
+The same as interceptors you can stack many handlers into stacks, but only one stack can be defined per package.
+
+A `<unknown-handler-ref/>`'s `name` attribute is a reference to a `bean`, which is an implementation of the `UnknownHandler` interface. You can inspect the interface to see its methods and basically returning a `null` means the action, result or method is still unknown.
+
+If there is no stack defined in the package but unknown handlers were defined, they will be loaded and applied in a random order.
+
+## Summary
+
+As you can see, configuring Struts is very flexible. You can change almost any aspect of the framework by implementing a specific interface and defining it as a new `bean`.
