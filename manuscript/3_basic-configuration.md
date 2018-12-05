@@ -214,7 +214,7 @@ Below is an example stack build using the above defined interceptors:
 
 As you can see, to define a stack you must use `<interceptor-stack/>` tag and define a `name` which must be unique across the application. You build your stack using `<interceptor-ref/>` tag with a `name` attribute pointing to previously defined interceptor. You can create stacks from existing stack to slightly modify its behavior by adding another interceptor, see the example below:
 
-```
+```xml
 <interceptor-stack name="defaultWithMessages">
   <interceptor-ref name="gruufDefault"/>
   <interceptor-ref name="store">
