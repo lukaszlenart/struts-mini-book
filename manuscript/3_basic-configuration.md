@@ -373,4 +373,4 @@ If there is no stack defined in the package but unknown handlers were defined, t
 
 ## Summary
 
-As you can see, configuring Struts is very flexible. You can change almost any aspect of the framework by implementing a specific interface and defining it as a new `bean`.
+As you can see, configuring Struts is very flexible. You can change almost any aspect of the framework by implementing a specific interface and defining it as a new `bean`. Also in most cases you are changing the existing default behavior by simply adjusting few config options. As you were able to see how to configure actions, you can now understand that action's configuration heavily depends on tweaking the defaults. Understanding this will help you better understand your project and how to use Struts to achieve expected results in the simplest manner.
