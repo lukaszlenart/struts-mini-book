@@ -37,3 +37,41 @@ To configure a different mapper than the default one, you must set the below con
 ```xml
 <constant name="struts.mapper.class" value="restful"/>
 ```
+
+Where `name` must reference a bean implementing `org.apache.struts2.dispatcher.mapper.ActionMapper`.
+
+## static content
+
+If an ActionMapper could not identify an action in the request, it is also possible that the request points to a static resource that should be handled by Struts. Struts provides an interface `StaticContentLoader` which is used to handle such case.
+
+There is also a default implementation - `DefaultStaticContentLoader` - which will handle requests starting either with `/struts/` or `/static/` prefix.
+
+There are two important methods that must be implemented:
+
+- `canHandle(String)` - indicates if this resource handler can handle the request and a potential static resource was identified in the request
+- `findStaticResource(String, HttpServletRequest, HttpServletResponse )` - performs lookup to find the static resource, it can scan packages or JARs to fetch the static resource.
+
+You can implement your own static resources handler, just define a bean implementing `org.apache.struts2.dispatcher.StaticContentLoader` interface and point struts to use it, as shown below:
+
+```xml
+<bean 
+  type="org.apache.struts2.dispatcher.StaticContentLoader" 
+  class="MyStaticContentLoader" 
+  name="myLoader" />
+
+<constant name="struts.staticContentLoader" value="myLoader" />
+```
+
+If your application should not serve static content, you can disable the whole functionality by setting a constant `struts.serve.static` to `false`:
+
+```xml
+<constant name="struts.serve.static" value="false" />
+```
+
+This option is useful if you serve static content out of Struts using a CDN mechanism or something like that. In such case is also a good idea to tell Struts to ignore requests that matches given pattern as they will be handled elsewhere:
+
+```xml
+<constant name="struts.action.excludePattern" value="/content/.*?" />
+```
+
+## object factory
