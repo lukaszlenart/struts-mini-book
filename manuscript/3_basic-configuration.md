@@ -71,7 +71,7 @@ The two most important attributes are:
  This works very similar to other DI frameworks like Spring. The other attributes are:
 
   - `name` - an unique bean name, it cannot be duplicated across framework and in your application
-  - `scope` - in which scope given bean should be created, `prototype` means that bean will be created on each invocation (not request) to get an instance of the bean. There is also scope `singleton` which means that there be just on instance of the bean across one instance of the framework.
+  - `scope` - in which scope given bean should be created, `prototype` means that bean will be created on each invocation (not request) to get an instance of the bean. There is also scope `singleton` which means that there be just on instance of the bean across one instance of the framework - this is a default value if `scope` attribute was not defined.
 
   In most cases you will be selecting which bean to use be defining a constant. In this case to select other implementation of the `MultiPartRequest` you can define the constant as below:
 
