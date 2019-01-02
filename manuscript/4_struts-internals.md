@@ -74,4 +74,59 @@ This option is useful if you serve static content out of Struts using a CDN mech
 <constant name="struts.action.excludePattern" value="/content/.*?" />
 ```
 
-## object factory
+## object factory & internal DI
+
+An object factory is responsible for creating any other objects defined by users. Thus means the object factory class will create new instances of actions, results, interceptors, validators and converters.
+
+Just to remind you that actions are instantiated per request, so with each and every request a new instance will be created. There will be no shared state between the same two actions created from the same class. The same are results, which are created per request and do not share state.
+
+Interceptors are singletons per package within they were defined and they should be able to handle shared state (if they use such functionality).
+
+Converters and validators are normal singletons which are created once and reused every time when conversion or validation is needed. Thus requires to avoid using a shared state between them, those objects should be stateless.
+
+The basic object factory implementation uses internal Dependency Injections (aka DI) mechanism to create instances of the classes. Just a site note, as from Struts 2.6 you can annotate an action's constructor and inject beans into it. Before it was not possible. There are other implementations that are using Spring or CDI to instantiate objects.
+
+As I mentioned early, Struts provides its own small DI mechanism which is used internally to tie objects. It has no fancy mind-blowing functions like other DI frameworks. It's a pure essence of DI just to instantiate an object of a class and inject dependencies into it. Historically it is a predecessor of the [Guice Framework](https://github.com/google/guice).
+
+The internal DI provides just one annotation: `@Inject` with two parameters: `value` which is a name of a dependency to inject and `required` which tells framework to ignore such dependency if missing.
+
+A small example how to get access to an instance of the `ObjectFactory`:
+
+```java
+@Inject
+public void setObjectFactory(ObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
+}
+```
+
+It looks very familiar as in Spring for example.
+
+You can use internal DI to define your own beans and inject them into your actions. I wouldn't suggest using this technique in large applications as it can become cumbersome very fast and a lot of useful functions are missing. But it's a good idea for a small applications or just to play & learn how to use it.
+
+You must start by defining a bean in `struts.xml`:
+
+```xml
+<struts>
+  <bean 
+    type="my.company.app.Interface" 
+    class="my.company.app.MyImplementation"/>
+</struts>  
+```
+
+It's exactly the same as I was presenting in chapter [Basic Configuration](#basic-configuration), but you can omit `name` and `scope` attributes. Then a default name will be used and scope will be defined as `singleton`. And now you can inject your bean into your action:
+
+```java
+public class MyAction {
+
+  @Inject
+  public MyAction(Interface impl) {
+    this.impl = impl;
+  }
+  
+  ...
+}
+```
+
+As you can see, internal DI will select a proper object based on the defined type and will inject it when creating an action. To be honest, you can inject your bean in any other Struts class like interceptor, validator or converter.
+
+## converters & validators
