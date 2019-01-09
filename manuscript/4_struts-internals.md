@@ -9,7 +9,7 @@ This chapter will allow you to understand how Struts works internally, what are 
 An entry point to your Struts application is defined via a servlet filter. You have two options:
 
 - `org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter` - a commonly used filter which performs prepare and execute operations at the same time, this is a good choice for most of the applications
-- `org.apache.struts2.dispatcher.filter.StrutsPrepareFilter` and `org.apache.struts2.dispatcher.filter.StrutsExecuteFilter` - these two filters will work exactly in the same way as the first filter but allows you to split prepare and operations into step which allows to use another filter in between to modify a servlet context. A good example is support for Sitemesh, which requires to modify the servlet context before an action can be executed.
+- `org.apache.struts2.dispatcher.filter.StrutsPrepareFilter` and `org.apache.struts2.dispatcher.filter.StrutsExecuteFilter` - these two filters will work exactly in the same way as the first filter but allows you to split prepare and execute operations into steps which allows you to use another filter in between to modify a servlet context. A good example is support for Sitemesh, which requires to modify the servlet context before an action can be executed.
 
 As you can notice, there are two phases - preparation and execution. This is a default operation flow as from Struts 2.5. Such two steps process was introduced to allow alter the context by other filters before an action and its result will be executed. This gives you an opportunity to modify Struts logic using your own filter. 
 
@@ -26,11 +26,11 @@ You can use them as a staring point in developing your own filter if aim to modi
 
 ## action mapping
 
-Once request reached the filter, it's a time to map it to an action. An instance of `ActionMapper` is used the perform such operation. There are many different implementations of that interface, by default a `DefaultActionMapper` class is used. It use a standard `<action>.<extension>` pattern to extract an action from the request.
+Once request reached the filter, it's a time to map it to an action. An instance of `ActionMapper` is used to perform such operation. There are many different implementations of that interface, by default a `DefaultActionMapper` class is used. It use a standard `<action>.<extension>` pattern to extract an action from the request.
 
 There are also two REST implementations in the Struts Core package - `Restful2ActionMapper` and `RestfulActionMapper`. You can find more about those two in the [documentation](https://struts.apache.org/core-developers/action-mapper.html).
 
-There are also two meta mappers - `CompositeActionMapper` and `PrefixBasedActionMapper`. The first allows you to composite a few mappers and used the to map request to an action. It cycles throughout the configured list of mappers and uses the first non-null result. The second can be configure on per prefix basis, you specify a path prefix and a corresponding mapper.
+There are also two meta mappers - `CompositeActionMapper` and `PrefixBasedActionMapper`. The first allows you to composite a few mappers and used them to map request to an action. It cycles throughout the configured list of mappers and uses the first non-null result. The second can be configured on per prefix basis, you specify a path prefix and a corresponding mapper.
 
 To configure a different mapper than the default one, you must set the below constant to a proper value:
 
@@ -49,7 +49,7 @@ There is also a default implementation - `DefaultStaticContentLoader` - which wi
 There are two important methods that must be implemented:
 
 - `canHandle(String)` - indicates if this resource handler can handle the request and a potential static resource was identified in the request
-- `findStaticResource(String, HttpServletRequest, HttpServletResponse )` - performs lookup to find the static resource, it can scan packages or JARs to fetch the static resource.
+- `findStaticResource(String, HttpServletRequest, HttpServletResponse)` - performs lookup to find the static resource, it can scan packages or JARs to fetch the static content.
 
 You can implement your own static resources handler, just define a bean implementing `org.apache.struts2.dispatcher.StaticContentLoader` interface and point struts to use it, as shown below:
 
@@ -84,7 +84,7 @@ Interceptors are singletons per package within they were defined and they should
 
 Converters and validators are normal singletons which are created once and reused every time when conversion or validation is needed. Thus requires to avoid using a shared state between them, those objects should be stateless.
 
-The basic object factory implementation uses internal Dependency Injections (aka DI) mechanism to create instances of the classes. Just a site note, as from Struts 2.6 you can annotate an action's constructor and inject beans into it. Before it was not possible. There are other implementations that are using Spring or CDI to instantiate objects.
+The basic object factory implementation uses internal Dependency Injections (aka DI) mechanism to create instances of the classes. Just a site note, as from Struts 2.6 you can annotate an action's constructor and inject beans into it. Before that this was not possible. There are other implementations that are using Spring or CDI to instantiate objects.
 
 As I mentioned early, Struts provides its own small DI mechanism which is used internally to tie objects. It has no fancy mind-blowing functions like other DI frameworks. It's a pure essence of DI just to instantiate an object of a class and inject dependencies into it. Historically it is a predecessor of the [Guice Framework](https://github.com/google/guice).
 
@@ -127,6 +127,7 @@ public class MyAction {
 }
 ```
 
-As you can see, internal DI will select a proper object based on the defined type and will inject it when creating an action. To be honest, you can inject your bean in any other Struts class like interceptor, validator or converter.
+As you can see, internal DI will select a proper object based on the defined type and will inject it when creating an action. To be honest, you can inject your own beans in any other Struts object like interceptor, validator or converter.
 
 ## converters & validators
+
