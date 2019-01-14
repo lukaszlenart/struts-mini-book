@@ -141,7 +141,7 @@ The first section defines `properties` that can be used in your pom to keep the 
 
 The following section defines project's dependencies. It's a list of `groupId/artifactId/version` - the same as you have been defining when creating your first project using the Struts Maven Archetypes. Those properties uniquely identify each dependency.
 
-As you can notice there is one difference, the last dependency `struts2-junit-plugin` has `<scope>` property defined as `test`. It means that this dependency will be used only in tests (e.g. unit tests) and what's more important it won't be available in a production version of your application. Yes, this means there be no `struts2-junit-plugin.jar` in the final `WEB-INF/lib` folder. I will explain more about using test dependencies in chapter [9. Testing](#9_testing).
+As you can notice there is one difference, the last dependency `struts2-junit-plugin` has `<scope>` property defined as `test`. It means that this dependency will be used only in tests (e.g. unit tests) and what's more important it won't be available in a production version of your application. Yes, this means there be no `struts2-junit-plugin.jar` in the final `WEB-INF/lib` folder. I will explain more about using test dependencies in chapter [9. Testing](#testing).
 
 ## Summary
 

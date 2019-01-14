@@ -1,4 +1,4 @@
-# 3. Basic configuration
+# 3. Basic configuration {#basic-configuration}
 
 ## What will be covered
 
