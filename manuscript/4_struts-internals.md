@@ -129,5 +129,39 @@ public class MyAction {
 
 As you can see, internal DI will select a proper object based on the defined type and will inject it when creating an action. To be honest, you can inject your own beans in any other Struts object like interceptor, validator or converter.
 
-## converters & validators
+## converters
 
+If you want to create a custom converter you must create a class that extends `StrutsTypeConverter` and implements two methods:
+
+- `convertFromString()` which handles conversion of incoming string value into an object
+- `convertToString()` which does the opposite
+
+Please remember that everything transferred over HTTP is a String, even a binary file is an encoded String.
+
+Having your custom converted implemented, you must register it using a file `xwork-conversion.properties`. As from Struts 2.6 this file is deprecated and you should use `struts-conversion.properties` file instead.
+
+To register your converter specify a type that is handled by the converter with the assigned converter:
+
+```text
+com.gruuf.auth.Token=com.gruuf.web.conversion.TokenTypeConverter
+```
+
+This lines tells Struts to use `TokenTypeConverter` each time a conversion from String to `Token` is needed, and in opposite direction.
+
+Converters are stateless, you shouldn't use fields to keep state or do the logic. You can inject existing beans into it, but please remember that converters are created just once and then reused.
+
+Why you should use converters? It's a simple technic to reduce code duplication and prone for errors. With converter in place you can simply use the object in your page without a need to convert it to string first:
+
+```jsp
+<s:property value="user.token"/>
+```
+
+as opposite to
+
+```jsp
+<s:property value="user.token.formatToString"/>
+or
+<s:property value="formatToken(user.token)"/>
+```
+
+## validators
