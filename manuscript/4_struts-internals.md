@@ -136,9 +136,9 @@ If you want to create a custom converter you must create a class that extends `S
 - `convertFromString()` which handles conversion of incoming string value into an object
 - `convertToString()` which does the opposite
 
-Please remember that everything transferred over HTTP is a String, even a binary file is an encoded String.
+Please remember that everything transferred over HTTP is a String, even a binary file is encoded as a String.
 
-Having your custom converted implemented, you must register it using a file `xwork-conversion.properties`. As from Struts 2.6 this file is deprecated and you should use `struts-conversion.properties` file instead.
+Having your custom converter implemented, you must register it using a file `xwork-conversion.properties`. As from Struts 2.6 this file is deprecated and you should use `struts-conversion.properties` file instead.
 
 To register your converter specify a type that is handled by the converter with the assigned converter:
 
@@ -150,7 +150,7 @@ This lines tells Struts to use `TokenTypeConverter` each time a conversion from 
 
 Converters are stateless, you shouldn't use fields to keep state or do the logic. You can inject existing beans into it, but please remember that converters are created just once and then reused.
 
-Why you should use converters? It's a simple technic to reduce code duplication and prone for errors. With converter in place you can simply use the object in your page without a need to convert it to string first:
+Why you should use converters? It's a simple technic to reduce code duplication and error prone level. With converter in place you can simply use objects in your page without a need to convert them to string first:
 
 ```jsp
 <s:property value="user.token"/>
@@ -163,5 +163,3 @@ as opposite to
 or
 <s:property value="formatToken(user.token)"/>
 ```
-
-## validators
