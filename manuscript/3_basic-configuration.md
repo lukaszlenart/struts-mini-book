@@ -325,19 +325,29 @@ Let's define a simple action.
 <action name="index"/>
 ```
 
-To define an action you must use a `<action/>` tag with at least one attribute `name` - the `name` must be unique in the given namespace. You don't have to define `<result>`s if your action will use one of the global results defined previously.
+To define an action you must use an `<action/>` tag with at least one attribute `name` - the `name` must be unique in the given namespace. You don't have to define `<result>`s if your action will use one of the global results defined previously.
 
-Let's analyze this super simple action config. What class will be used to instantiate the action? Do you remember `<default-class-ref/>` for the previous sections? If so, exactly that class will be used to create instance of the `index` action. By default Struts defines `<default-class-ref>` as:
+Let's analyze this super simple action config. What class will be used to instantiate the action? Do you remember `<default-class-ref/>` from the previous sections? If so, exactly that class will be used to create instance of the `index` action. By default Struts defines `<default-class-ref>` as:
 
 ```xml
 <default-class-ref class="com.opensymphony.xwork2.ActionSupport" />
 ```
 
-If didn't define your own default, this class will be used but only if your package extends `struts-default` package.
+If you didn't define your own default, this class will be used but only if your package extends `struts-default` package.
 
-Another questions, what stack of interceptors will be applied to this action? Do you remember `<default-interceptor-ref/>`? Right, exactly this stack of interceptors will be applied to the action. And again, if you are extending `struts-default` package, `defaultStack` is defined as the default interceptors stack.
+Another questions, what stack of interceptors will be applied to this action? Do you remember `<default-interceptor-ref/>`? Right, exactly this stack of interceptors will be applied to the action. And again, if you are extending `struts-default` package, `defaultStack` is defined as the default interceptors stack. 
 
 Another question, what method will be called inside the `ActionSupport` class? This isn't something that you can define but Struts has built-in default to execute an `execute` method when none was provided. This is also the first method of the `<global-allowed-methods>` defined in `struts-default.xml` as showed above.
+
+And finally, what result will be executed as there was none defined? By default the `execute` method returns `success` as a result, so Struts will look for that given result, either in the action's configuration or in the global results. So you must define a result `success` as a global result to allow this simple configuration to work.
+
+```xml
+<global-results>
+  <result name="success">
+    /WEB-INF/hello.jsp
+  </result>
+</global-results>  
+```
 
 As you see, Struts will do a lot more than you expect based on such a simple configuration. That's why knowledge about different aspects of Struts configuration is so important to properly understand how to configure actions.
 
