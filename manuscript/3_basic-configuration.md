@@ -43,9 +43,9 @@ Since Apache Struts 2.5.6 you can use an env substitution mechanism which allows
 </struts>
 ```
 
-As you see you can also specify a default value in case if the variable is missing. In this case `devMode` will be set to `false` when there is no `DEV_MODE` environment variable defined.
+As you see, you can also specify a default value in case when the variable is missing. In this case the `devMode` constant will be set to `false` when there is no `DEV_MODE` environment variable defined.
 
-You can also define your own constants and inject them into your actions but this an advance topic that I will explore in my next book.
+You can also define your own constants and inject them into your actions, but this an advance topic that I will explore in my next book.
 
 ### bean
 
@@ -319,7 +319,7 @@ Finally we are moving to a core Struts functionality. Actions are the central po
 
 Yet, you can put all your logic in actions only if you are testing a solution or just playing with Struts. You should always have clear boundaries between layers performing different logic.
 
-Let's define a simple action.
+Let's define a simple action:
 
 ```xml
 <action name="index"/>
@@ -368,18 +368,18 @@ Please note that you do not have to define `edit` as an allowed action method (s
 
 The action defines two action results - `input` and a default one (no name). The default one is `success` because Struts assumes `success` as a default result name. So your action can either return `success` or `input`. The `input` result doesn't specify `type` which means a default type will be used which is `dispatcher` - the default is defined by setting a `default` attribute to `true` when defining a result (see section above about `result-types`).
 
-Next, there are two references to interceptors defined, where the first is an interceptor named `params` and the second is an interceptors stack called `basicStack` (which is defined in `struts-default.xml`)
+Next, there are two references to defined interceptors, where the first is an interceptor named `params` and the second is an interceptors stack called `basicStack` which is defined in `struts-default.xml`.
 
-Basically what we have did here is to define some non-default values that will be used instead of the framework predefined defaults. Any other action configurations do the same - replaces default with action's specific values.
+Basically what we have did here is to define some non-default values that will be used instead of the framework's predefined defaults. Any other action configurations do the same - replaces defaults with action's specific values.
 
 ### unknown-handler-stack & unknown-handler-ref
 
-The final configuration options are `<unknown-handler-stack/>` and `<unknown-handler-ref/>` which can be used to handle an unknown action. An action is unknown if it didn't match any defined action in a given package. The handlers will be called just before steering flow into `<default-action-ref/>`. These handlers can be also used to handle an unknown result and action method.
+The final configuration options are `<unknown-handler-stack/>` and `<unknown-handler-ref/>` which can be used to handle an unknown action. An action is unknown if it didn't match any defined action in the given package. The handlers will be called just before steering flow into `<default-action-ref/>`. These handlers can be also used to handle an unknown result and action method.
 The same as interceptors you can stack many handlers into stacks, but only one stack can be defined per package.
 
 A `<unknown-handler-ref/>`'s `name` attribute is a reference to a `bean`, which is an implementation of the `UnknownHandler` interface. You can inspect the interface to see its methods and basically returning a `null` means the action, result or method is still unknown.
 
-If there is no stack defined in the package but unknown handlers were defined, they will be loaded and applied in a random order.
+If there is no stack defined in the package, but unknown handlers were defined, they will be loaded and applied in a random order.
 
 ## Summary
 
